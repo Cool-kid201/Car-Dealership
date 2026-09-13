@@ -1,0 +1,488 @@
+class Car:
+    def __init__(self, car_id, brand, model, year, price):
+        self.car_id = car_id
+        self.brand = brand
+        self.model = model
+        self.year = year
+        self.price = price
+        self.available = True
+
+    def display_info(self):
+        print("Car ID:", self.car_id)
+        print("Brand:", self.brand)
+        print("Model:", self.model)
+        print("Year:", self.year)
+        print("Price: ₹", self.price)
+
+        if self.available:
+            print("Status: Available")
+        else:
+            print("Status: Sold")
+
+        print()
+
+
+class Customer:
+    def __init__(self, customer_id, name, phone):
+        self.customer_id = customer_id
+        self.name = name
+        self.phone = phone
+        self.purchased_cars = []
+
+    def display_info(self):
+        print("Customer ID:", self.customer_id)
+        print("Name:", self.name)
+        print("Phone:", self.phone)
+
+        if len(self.purchased_cars) == 0:
+            print("Purchased Cars: None")
+        else:
+            print("Purchased Cars:")
+
+            for car in self.purchased_cars:
+                print("-", car.brand, car.model)
+
+        print()
+
+
+class Employee:
+    def __init__(self, employee_id, name, role):
+        self.employee_id = employee_id
+        self.name = name
+        self.role = role
+
+    def display_info(self):
+        print("Employee ID:", self.employee_id)
+        print("Name:", self.name)
+        print("Role:", self.role)
+        print()
+
+
+class Dealership:
+    def __init__(self, name):
+        self.name = name
+
+        self.cars = []
+        self.customers = []
+        self.employees = []
+        self.sales = []
+
+        self.car_number = 1
+        self.customer_number = 1
+        self.employee_number = 1
+
+    # CAR METHODS
+
+    def generate_car_id(self):
+        car_id = "CAR" + str(self.car_number).zfill(3)
+        self.car_number += 1
+        return car_id
+
+    def add_car(self, car):
+        self.cars.append(car)
+        print("Car added successfully!")
+        print("Car ID:", car.car_id)
+
+    def show_cars(self):
+        if len(self.cars) == 0:
+            print("There are no cars in the dealership.")
+            return
+
+        print("\nCar Inventory:")
+
+        for car in self.cars:
+            car.display_info()
+
+    def show_available_cars(self):
+        found = False
+
+        print("\nAvailable Cars:")
+
+        for car in self.cars:
+            if car.available:
+                car.display_info()
+                found = True
+
+        if not found:
+            print("There are no available cars.")
+
+    def search_cars(self, keyword):
+        found = False
+
+        print("\nSearch Results:")
+
+        for car in self.cars:
+            search_text = (
+                car.brand.lower()
+                + " "
+                + car.model.lower()
+            )
+
+            if keyword.lower() in search_text:
+                car.display_info()
+                found = True
+
+        if not found:
+            print("No cars found.")
+
+    def find_car(self, car_id):
+        for car in self.cars:
+            if car.car_id == car_id:
+                return car
+
+        return None
+
+    # CUSTOMER METHODS
+
+    def generate_customer_id(self):
+        customer_id = "CUS" + str(self.customer_number).zfill(3)
+        self.customer_number += 1
+        return customer_id
+
+    def add_customer(self, customer):
+        self.customers.append(customer)
+
+        print("Customer added successfully!")
+        print("Customer ID:", customer.customer_id)
+
+    def show_customers(self):
+        if len(self.customers) == 0:
+            print("There are no customers.")
+            return
+
+        print("\nCustomers:")
+
+        for customer in self.customers:
+            customer.display_info()
+
+    def find_customer(self, customer_id):
+        for customer in self.customers:
+            if customer.customer_id == customer_id:
+                return customer
+
+        return None
+
+    # EMPLOYEE METHODS
+
+    def generate_employee_id(self):
+        employee_id = "EMP" + str(self.employee_number).zfill(3)
+        self.employee_number += 1
+        return employee_id
+
+    def add_employee(self, employee):
+        self.employees.append(employee)
+
+        print("Employee added successfully!")
+        print("Employee ID:", employee.employee_id)
+
+    def show_employees(self):
+        if len(self.employees) == 0:
+            print("There are no employees.")
+            return
+
+        print("\nEmployees:")
+
+        for employee in self.employees:
+            employee.display_info()
+
+    def find_employee(self, employee_id):
+        for employee in self.employees:
+            if employee.employee_id == employee_id:
+                return employee
+
+        return None
+
+    def fire_employee(self, employee_id):
+        employee = self.find_employee(employee_id)
+
+        if employee is None:
+            print("Employee not found.")
+            return
+
+        self.employees.remove(employee)
+
+        print("Employee fired successfully!")
+        print("Name:", employee.name)
+
+    # SELL CAR
+
+    def sell_car(self, car_id, customer_id):
+        car = self.find_car(car_id)
+        customer = self.find_customer(customer_id)
+
+        if car is None:
+            print("Car not found.")
+            return
+
+        if customer is None:
+            print("Customer not found.")
+            return
+
+        if not car.available:
+            print("This car has already been sold.")
+            return
+
+        car.available = False
+
+        customer.purchased_cars.append(car)
+
+        sale = {
+            "car": car,
+            "customer": customer
+        }
+
+        self.sales.append(sale)
+
+        print("\nSale completed!")
+        print("Customer:", customer.name)
+        print("Car:", car.brand, car.model)
+        print("Price: ₹", car.price)
+
+    # SALES HISTORY
+
+    def show_sales(self):
+        if len(self.sales) == 0:
+            print("There are no sales yet.")
+            return
+
+        print("\nSales History:")
+
+        total_revenue = 0
+
+        for sale in self.sales:
+            car = sale["car"]
+            customer = sale["customer"]
+
+            print("Customer:", customer.name)
+            print("Car:", car.brand, car.model)
+            print("Price: ₹", car.price)
+            print()
+
+            total_revenue += car.price
+
+        print("Total Revenue: ₹", total_revenue)
+
+    # STATISTICS
+
+    def show_statistics(self):
+        available_cars = 0
+        sold_cars = 0
+        revenue = 0
+
+        for car in self.cars:
+            if car.available:
+                available_cars += 1
+            else:
+                sold_cars += 1
+
+        for sale in self.sales:
+            revenue += sale["car"].price
+
+        print("\nDealership Statistics:")
+        print("Dealership:", self.name)
+        print("Total Cars:", len(self.cars))
+        print("Available Cars:", available_cars)
+        print("Sold Cars:", sold_cars)
+        print("Total Customers:", len(self.customers))
+        print("Total Employees:", len(self.employees))
+        print("Total Sales:", len(self.sales))
+        print("Total Revenue: ₹", revenue)
+
+
+def get_integer(message):
+    while True:
+        try:
+            return int(input(message))
+        except ValueError:
+            print("Please enter a valid number.")
+
+
+def get_float(message):
+    while True:
+        try:
+            return float(input(message))
+        except ValueError:
+            print("Please enter a valid number.")
+
+#Display
+def main():
+
+    dealership = Dealership("DreamDrive Motors")
+    while True:
+
+        print("\nDreamDrive Motors")
+        print("Car Dealership Management System\n")
+
+        print("1. Add Car")
+        print("2. View All Cars")
+        print("3. View Available Cars")
+        print("4. Search Cars")
+        print("5. Add Customer")
+        print("6. View Customers")
+        print("7. Add Employee")
+        print("8. View Employees")
+        print("9. Fire Employee")
+        print("10. Sell Car")
+        print("11. View Sales History")
+        print("12. View Statistics")
+        print("13. Exit")
+
+        choice = input("\nEnter your choice: ")
+
+        # ADD CAR
+
+        if choice == "1":
+
+            print("\nAdd Car")
+
+            brand = input("Enter Brand: ")
+            model = input("Enter Model: ")
+            year = get_integer("Enter Year: ")
+            price = get_float("Enter Price: ₹")
+
+            car_id = dealership.generate_car_id()
+
+            car = Car(
+                car_id,
+                brand,
+                model,
+                year,
+                price
+            )
+
+            dealership.add_car(car)
+
+        # VIEW ALL CARS
+
+        elif choice == "2":
+            dealership.show_cars()
+
+        # VIEW AVAILABLE CARS
+
+        elif choice == "3":
+            dealership.show_available_cars()
+
+        # SEARCH CARS
+
+        elif choice == "4":
+
+            keyword = input("Enter brand or model: ")
+
+            dealership.search_cars(keyword)
+
+        # ADD CUSTOMER
+
+        elif choice == "5":
+
+            print("\nAdd Customer")
+
+            name = input("Enter Customer Name: ")
+            phone = input("Enter Phone Number: ")
+
+            customer_id = dealership.generate_customer_id()
+
+            customer = Customer(
+                customer_id,
+                name,
+                phone
+            )
+
+            dealership.add_customer(customer)
+
+        # VIEW CUSTOMERS
+
+        elif choice == "6":
+            dealership.show_customers()
+
+        # ADD EMPLOYEE
+
+        elif choice == "7":
+
+            print("\nAdd Employee")
+
+            name = input("Enter Employee Name: ")
+            role = input("Enter Employee Role: ")
+
+            employee_id = dealership.generate_employee_id()
+
+            employee = Employee(
+                employee_id,
+                name,
+                role
+            )
+
+            dealership.add_employee(employee)
+
+        # VIEW EMPLOYEES
+
+        elif choice == "8":
+            dealership.show_employees()
+
+        # FIRE EMPLOYEE
+
+        elif choice == "9":
+
+            print("\nFire Employee")
+
+            if len(dealership.employees) == 0:
+                print("There are no employees.")
+                continue
+
+            employee_id = input(
+                "Enter Employee ID: "
+            )
+
+            dealership.fire_employee(employee_id)
+
+        # SELL CAR
+
+        elif choice == "10":
+
+            print("\nSell Car")
+
+            if len(dealership.cars) == 0:
+                print("There are no cars to sell.")
+                continue
+
+            if len(dealership.customers) == 0:
+                print("There are no customers.")
+                print("Add a customer first.")
+                continue
+
+            car_id = input(
+                "Enter Car ID: "
+            )
+
+            customer_id = input(
+                "Enter Customer ID: "
+            )
+
+            dealership.sell_car(
+                car_id,
+                customer_id
+            )
+
+        # SALES HISTORY
+
+        elif choice == "11":
+            dealership.show_sales()
+
+        # STATISTICS
+
+        elif choice == "12":
+            dealership.show_statistics()
+
+        # EXIT
+
+        elif choice == "13":
+
+            print("\nThank you for using DreamDrive Motors!")
+            break
+
+        else:
+
+            print("Invalid choice.")
+            print("Please enter a number from 1 to 13.")
+
+
+main()
